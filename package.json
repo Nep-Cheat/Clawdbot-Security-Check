@@ -1,0 +1,29 @@
+{
+  "name": "clawdbot-security-check",
+  "version": "1.0.0",
+  "description": "Read-only Clawdbot security analysis tool",
+  "main": "security-check.js",
+  "bin": {
+    "clawdbot-security-check": "security-check.js"
+  },
+  "scripts": {
+    "start": "node security-check.js",
+    "test": "node -e \"require('./security-check.js'); console.log('OK')\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheSethRose/Clawdbot-Security-Check.git"
+  },
+  "keywords": [
+    "clawdbot",
+    "security",
+    "audit",
+    "vulnerability-scanner"
+  ],
+  "author": "Seth Rose",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TheSethRose/Clawdbot-Security-Check/issues"
+  },
+  "homepage": "https://github.com/TheSethRose/Clawdbot-Security-Check"
+}

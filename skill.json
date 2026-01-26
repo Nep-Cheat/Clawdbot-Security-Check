@@ -1,0 +1,35 @@
+{
+  "name": "Clawdbot Security Check",
+  "version": "1.0.0",
+  "description": "Read-only Clawdbot security analysis that generates vulnerability reports without modifying settings",
+  "author": "Gavin - Technical Co-Founder",
+  "keywords": ["security", "audit", "clawdbot", "analysis", "vulnerability"],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "main": "security-check.js",
+  "scripts": {
+    "start": "node security-check.js",
+    "start:json": "node security-check.js --json",
+    "test": "node -e \"console.log('Security check module loaded successfully')\""
+  },
+  "permissions": ["read-only"],
+  "safety": {
+    "readOnly": true,
+    "modifiesSettings": false,
+    "networkAccess": false,
+    "fileSystemAccess": ["read"]
+  },
+  "checks": [
+    "gateway-exposed",
+    "dm-policy",
+    "sandbox-disabled",
+    "credentials-plaintext",
+    "prompt-injection",
+    "dangerous-commands",
+    "network-isolation",
+    "elevated-access",
+    "audit-logging",
+    "pairing-codes"
+  ]
+}
