@@ -2,6 +2,8 @@
 
 🔒 **Read-only security analysis tool for Clawdbot configurations**
 
+Inspired by the security hardening framework from [ᴅᴀɴɪᴇʟ ᴍɪᴇssʟᴇʀ](https://x.com/DanielMiessler) ([original post](https://x.com/DanielMiessler/status/2015865548714975475)).
+
 A read-only security scanner that analyzes Clawdbot installations for the top 10 security vulnerabilities without making any changes to your configuration.
 
 ## Features
