@@ -1,7 +1,7 @@
 {
   "name": "Clawdbot Security Check",
-  "version": "2.1.0",
-  "description": "Self-security audit framework that teaches Clawdbot to audit its own configuration across 12 security domains. Knowledge-based, extensible, 100% read-only. Includes official ClawdHub security docs integration.",
+  "version": "2.2.0",
+  "description": "Self-security audit framework that teaches Clawdbot to audit its own configuration across 13 security domains. Knowledge-based, extensible, 100% read-only. Includes trust hierarchy, incident response, secret scanning, and official ClawdBot security docs integration.",
   "author": "Gavin - Technical Co-Founder",
   "keywords": ["security", "audit", "clawdbot", "self-audit", "hardening", "vulnerability", "framework"],
   "engines": {
@@ -28,12 +28,13 @@
     "credentials-security",
     "browser-control-exposure",
     "gateway-bind-network",
-    "tool-access-elevated",
+    "tool-access-sandboxing",
     "file-permissions-disk",
     "plugin-trust-model",
     "logging-redaction",
     "prompt-injection",
-    "dangerous-commands"
+    "dangerous-commands",
+    "secret-scanning"
   ],
   "severityLevels": ["critical", "high", "medium", "low"],
   "knowledgeFramework": true,

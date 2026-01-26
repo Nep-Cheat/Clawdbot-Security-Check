@@ -25,6 +25,17 @@ Running an AI agent with shell access requires caution. Focus on three areas:
 
 Start with the smallest access possible and widen it as you gain confidence.
 
+## Trust Hierarchy
+
+Apply appropriate trust levels based on role:
+
+| Level | Entity | Trust Model |
+|-------|--------|-------------|
+| 1 | **Owner** | Full trust — has all access |
+| 2 | **AI** | Trust but verify — sandboxed, logged |
+| 3 | **Allowlists** | Limited trust — only specified users |
+| 4 | **Strangers** | No trust — blocked by default |
+
 ## Audit Commands
 
 Use these commands to run security audits:
@@ -33,7 +44,7 @@ Use these commands to run security audits:
 - `clawdbot security audit --deep` — Comprehensive audit with all checks
 - `clawdbot security audit --fix` — Apply guardrail remediations
 
-## The 10 Security Domains
+## The 12 Security Domains
 
 When auditing Clawdbot, systematically evaluate these domains:
 
@@ -94,10 +105,12 @@ cat ~/.clawdbot/clawdbot.json | grep -E '"dm_policy|"allowFrom"'
 **What to check:**
 - What is `groupPolicy` set to?
 - Are groups explicitly allowlisted?
+- Are mention gates configured?
 
 **How to detect:**
 ```bash
 cat ~/.clawdbot/clawdbot.json | grep -E '"groupPolicy"|"groups"' 
+cat ~/.clawdbot/clawdbot.json | grep -i "mention"
 ```
 
 **Vulnerability:** Open group policy allows anyone in the room to trigger commands.
@@ -160,21 +173,25 @@ chmod 600 ~/.clawdbot/clawdbot.json
 - Is browser control enabled?
 - Are authentication tokens set for remote control?
 - Is HTTPS required for Control UI?
+- Is a dedicated browser profile configured?
 
 **How to detect:**
 ```bash
 cat ~/.clawdbot/clawdbot.json | grep -A5 '"browser"'
 cat ~/.clawdbot/clawdbot.json | grep -i "controlUi|insecureAuth"
+ls -la ~/.clawdbot/browser/
 ```
 
-**Vulnerability:** Exposed browser control without auth allows remote UI takeover.
+**Vulnerability:** Exposed browser control without auth allows remote UI takeover. Browser access allows the model to use logged-in sessions.
 
 **Remediation:**
 ```json
 {
   "browser": {
     "remoteControlUrl": "https://...",
-    "remoteControlToken": "..."
+    "remoteControlToken": "...",
+    "dedicatedProfile": true,
+    "disableHostControl": true
   },
   "gateway": {
     "controlUi": {
@@ -183,6 +200,8 @@ cat ~/.clawdbot/clawdbot.json | grep -i "controlUi|insecureAuth"
   }
 }
 ```
+
+**Security Note:** Treat browser control URLs as admin APIs.
 
 ---
 
@@ -217,20 +236,29 @@ cat ~/.clawdbot/clawdbot.json | grep '"tailscale"'
 
 ---
 
-### 7. Tool Access & Elevated Permissions 🟡 Medium
+### 7. Tool Access & Sandboxing 🟡 Medium
 
 **What to check:**
 - Are elevated tools allowlisted?
 - Is `restrict_tools` or `mcp_tools` configured?
-- Are open rooms enabled?
+- What is `workspaceAccess` set to?
+- Are sensitive tools running in sandbox?
 
 **How to detect:**
 ```bash
 cat ~/.clawdbot/clawdbot.json | grep -i "restrict|mcp|elevated"
+cat ~/.clawdbot/clawdbot.json | grep -i "workspaceAccess|sandbox"
 cat ~/.clawdbot/clawdbot.json | grep -i "openRoom"
 ```
 
-**Vulnerability:** Broad tool access means more blast radius if compromised.
+**Workspace Access Levels:**
+| Mode | Description |
+|------|-------------|
+| `none` | Workspace is off limits |
+| `ro` | Workspace mounted read-only |
+| `rw` | Workspace mounted read-write |
+
+**Vulnerability:** Broad tool access means more blast radius if compromised. Smaller models are more susceptible to tool misuse.
 
 **Remediation:**
 ```json
@@ -239,9 +267,13 @@ cat ~/.clawdbot/clawdbot.json | grep -i "openRoom"
   "mcp_tools": {
     "allowed": ["read", "write", "bash"],
     "blocked": ["exec", "gateway"]
-  }
+  },
+  "workspaceAccess": "ro",
+  "sandbox": "all"
 }
 ```
+
+**Model Guidance:** Use latest generation models for agents with filesystem or network access. If using small models, disable web search and browser tools.
 
 ---
 
@@ -330,11 +362,19 @@ ls -la ~/.clawdbot/logs/
 **What to check:**
 - Is `wrap_untrusted_content` or `untrusted_content_wrapper` enabled?
 - How is external/web content handled?
+- Are links and attachments treated as hostile?
 
 **How to detect:**
 ```bash
 cat ~/.clawdbot/clawdbot.json | grep -i "untrusted|wrap"
 ```
+
+**Prompt Injection Mitigation Strategies:**
+- Keep DMs locked to `pairing` or `allowlists`
+- Use mention gating in groups
+- Treat all links and attachments as hostile
+- Run sensitive tools in a sandbox
+- Use instruction-hardened models like Anthropic Opus 4.5
 
 **Vulnerability:** Untrusted content (web fetches, sandbox output) can inject malicious prompts.
 
@@ -342,7 +382,9 @@ cat ~/.clawdbot/clawdbot.json | grep -i "untrusted|wrap"
 ```json
 {
   "wrap_untrusted_content": true,
-  "untrusted_content_wrapper": "<untrusted>"
+  "untrusted_content_wrapper": "<untrusted>",
+  "treatLinksAsHostile": true,
+  "mentionGate": true
 }
 ```
 
@@ -373,6 +415,37 @@ cat ~/.clawdbot/clawdbot.json | grep -A10 '"blocked_commands"'
   ]
 }
 ```
+
+---
+
+### 13. Secret Scanning Readiness 🟡 Medium
+
+**What to check:**
+- Is detect-secrets configured?
+- Is there a `.secrets.baseline` file?
+- Has a baseline scan been run?
+
+**How to detect:**
+```bash
+ls -la .secrets.baseline 2>/dev/null
+which detect-secrets 2>/dev/null
+```
+
+**Secret Scanning (CI):**
+```bash
+# Find candidates
+detect-secrets scan --baseline .secrets.baseline
+
+# Review findings
+detect-secrets audit
+
+# Update baseline after rotating secrets or marking false positives
+detect-secrets scan --baseline .secrets.baseline --update
+```
+
+**Vulnerability:** Leaked credentials in the codebase can lead to compromise.
+
+---
 
 ## Audit Functions
 
@@ -413,9 +486,38 @@ Slash commands are only available to authorized senders based on channel allowli
 
 ### Potential Risks
 
-- **Execution of shell commands** — Mitigate via blocked_commands, restrict_tools
-- **File and network access** — Mitigate via sandbox, network isolation
-- **Social engineering and prompt injection** — Mitigate via wrap_untrusted_content
+| Risk | Mitigation |
+|------|------------|
+| Execution of shell commands | `blocked_commands`, `restrict_tools` |
+| File and network access | `sandbox`, `workspaceAccess: none/ro` |
+| Social engineering and prompt injection | `wrap_untrusted_content`, `mentionGate` |
+| Browser session hijacking | Dedicated profile, token auth, HTTPS |
+| Credential leakage | `logging.redactSensitive: tools`, env vars |
+
+## Incident Response
+
+If a compromise is suspected, follow these steps:
+
+### Containment
+1. **Stop the gateway process** — `clawdbot daemon stop`
+2. **Set gateway.bind to loopback** — `"bind": "127.0.0.1"`
+3. **Disable risky DMs and groups** — Set to `disabled`
+
+### Rotation
+1. **Change the gateway auth token** — `clawdbot doctor --generate-gateway-token`
+2. **Rotate browser control and hook tokens**
+3. **Revoke and rotate API keys** for model providers
+
+### Review
+1. **Check gateway logs and session transcripts** — `~/.clawdbot/logs/`
+2. **Review recent config changes** — Git history or backups
+3. **Re-run the security audit with the deep flag** — `clawdbot security audit --deep`
+
+## Reporting Vulnerabilities
+
+Report security issues to: **security@clawd.bot**
+
+**Do not post vulnerabilities publicly** until they have been fixed.
 
 ## Audit Execution Steps
 
@@ -439,7 +541,7 @@ done
 ```
 
 ### Step 2: Run Domain Checks
-For each of the 12 domains above:
+For each of the 13 domains above:
 1. Parse relevant config keys
 2. Compare against secure baseline
 3. Flag deviations with severity
@@ -501,7 +603,7 @@ To add new security checks:
 ### Example: Adding SSH Hardening Check
 
 ```
-## 13. SSH Agent Forwarding 🟡 Medium
+## 14. SSH Agent Forwarding 🟡 Medium
 
 **What to check:** Is SSH_AUTH_SOCK exposed to containers?
 
@@ -538,6 +640,7 @@ When auditing, ask:
 - Official docs: https://docs.clawd.bot/gateway/security
 - Original framework: [ᴅᴀɴɪᴇʟ ᴍɪᴇssʟᴇʀ on X](https://x.com/DanielMiessler/status/2015865548714975475)
 - Repository: https://github.com/TheSethRose/Clawdbot-Security-Check
+- Report vulnerabilities: security@clawd.bot
 
 ---
 
