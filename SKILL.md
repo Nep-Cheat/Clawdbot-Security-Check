@@ -1,6 +1,6 @@
 ---
 name: clawdbot-self-security-audit
-description: Perform a comprehensive read-only security audit of Clawdbot's own configuration. This is a knowledge-based skill that teaches Clawdbot to identify hardening opportunities across the system. Use when user asks to "run security check", "audit clawdbot", "check security hardening", or "what vulnerabilities does my Clawdbot have". This skill uses Clawdbot's internal capabilities and file system access to inspect configuration, detect misconfigurations, and recommend remediations. It is designed to be extensible - new checks can be added by updating this skill's knowledge.
+description: Perform a comprehensive read-only security audit of Clawdbot's own configuration. This is a knowledge-based skill that teaches Clawdbot to identify hardening opportunities and generate reports. Use when user asks to "run security check", "audit clawdbot", "check security hardening", or "what vulnerabilities do I have". This skill only READS configuration and generates reports—it never modifies settings or executes fixes automatically. Designed to be extensible—new checks can be added by updating this skill's knowledge.
 homepage: https://github.com/TheSethRose/Clawdbot-Security-Check
 metadata: {"clawdbot":{"emoji":"🔒","os":["darwin","linux"],"requires":{"files":["read"],"tools":["exec","bash"]},"install":[{"id":"read-skill","kind":"skill","name":"clawdbot-self-security-audit","label":"Install security audit skill","bins":["SKILL.md"]}]}}
 ---
