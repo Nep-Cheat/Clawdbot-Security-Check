@@ -12,8 +12,9 @@ This skill teaches Clawdbot to audit its own security posture using first-princi
 - 🔍 **Dynamic detection** - Clawdbot learns to find issues, not just run a script
 - 📚 **Extensible** - Add new checks by updating the skill
 - 🔒 **100% Read-only** - Only audits; never modifies configuration
+- 📖 **Report-focused** - Generates detailed reports with remediation guidance
 
-## The 12 Security Domains
+## The 13 Security Domains
 
 | # | Domain | Severity | Key Question |
 |---|--------|----------|--------------|
@@ -23,12 +24,13 @@ This skill teaches Clawdbot to audit its own security posture using first-princi
 | 4 | Credentials Security | 🔴 Critical | Are secrets in plaintext with loose permissions? |
 | 5 | Browser Control Exposure | 🟠 High | Is remote browser control secured? |
 | 6 | Gateway Bind & Network | 🟠 High | Is network exposure intentional and controlled? |
-| 7 | Tool Access & Elevated | 🟡 Medium | Are tools restricted to minimum needed? |
+| 7 | Tool Access & Sandboxing | 🟡 Medium | Are tools sandboxed with minimal access? |
 | 8 | File Permissions & Disk | 🟡 Medium | Are file permissions properly set? |
 | 9 | Plugin Trust & Model | 🟡 Medium | Are plugins allowlisted and models current? |
 | 10| Logging & Redaction | 🟡 Medium | Is sensitive data redacted in logs? |
 | 11| Prompt Injection | 🟡 Medium | Is untrusted content wrapped? |
 | 12| Dangerous Commands | 🟡 Medium | Are destructive commands blocked? |
+| 13| Secret Scanning | 🟡 Medium | Is detect-secrets baseline maintained? |
 
 ## Installation
 
@@ -49,26 +51,30 @@ cp -r Clawdbot-Security-Check ~/.clawdbot/skills/
 @clawdbot run security check
 @clawdbot what vulnerabilities do I have?
 @clawdbot security audit --deep
-@clawdbot security audit --fix
 ```
+
+**Note:** The `--fix` flag is documented for reference but the skill itself only generates reports—it never automatically modifies configuration.
 
 ## Security Principles
 
-Running an AI agent with shell access requires caution. Focus on:
+Running an AI agent with shell access requires caution. Focus on three areas:
 
 1. **Who can talk to the bot** — DM policies, group allowlists, channel restrictions
 2. **Where the bot is allowed to act** — Network exposure, gateway binding, proxy configs
 3. **What the bot can touch** — Tool access, file permissions, credential storage
 
-## Audit Functions
+### Trust Hierarchy
 
-The `--fix` flag applies these guardrails:
-- Changes `groupPolicy` from `open` to `allowlist` for common channels
-- Resets `logging.redactSensitive` from `off` to `tools`
-- Tightens permissions: `.clawdbot` to `700`, configs to `600`
-- Secures state files including credentials and auth profiles
+Apply appropriate trust levels based on role:
 
-## High-Level Checklist
+| Level | Entity | Trust Model |
+|-------|--------|-------------|
+| 1 | **Owner** | Full trust — has all access |
+| 2 | **AI** | Trust but verify — sandboxed, logged |
+| 3 | **Allowlists** | Limited trust — only specified users |
+| 4 | **Strangers** | No trust — blocked by default |
+
+## High-Level Audit Checklist
 
 Treat findings in this priority order:
 
@@ -79,12 +85,45 @@ Treat findings in this priority order:
 5. 🟡 Only load trusted plugins
 6. 🟡 Use modern models for bots with tool access
 
+## Key Features
+
+### Prompt Injection Mitigation
+- Keep DMs locked to `pairing` or `allowlists`
+- Use mention gating in groups
+- Treat all links and attachments as hostile
+- Run sensitive tools in a sandbox
+- Use instruction-hardened models like Anthropic Opus 4.5
+
+### Sandboxing Levels
+| Mode | Description |
+|------|-------------|
+| `none` | Workspace is off limits |
+| `ro` | Workspace mounted read-only |
+| `rw` | Workspace mounted read-write |
+
+### Incident Response (if compromised)
+1. **Containment** — Stop gateway, set bind to loopback, disable risky DMs/groups
+2. **Rotation** — Change gateway token, rotate browser/hook tokens, revoke API keys
+3. **Review** — Check logs, review config changes, re-run audit with `--deep`
+
+### Secret Scanning (detect-secrets)
+```bash
+# Find candidates
+detect-secrets scan --baseline .secrets.baseline
+
+# Review findings
+detect-secrets audit
+
+# Update baseline after rotating secrets
+detect-secrets scan --baseline .secrets.baseline --update
+```
+
 ## Extending the Framework
 
 Add new checks by contributing to SKILL.md:
 
 ```markdown
-## 13. New Vulnerability 🟡 Medium
+## 14. New Vulnerability 🟡 Medium
 
 **What to check:** What config reveals this?
 
@@ -136,7 +175,7 @@ Timestamp: 2026-01-26T15:30:00.000Z
 │ 🔴 Critical:  1
 │ 🟠 High:      2
 │ 🟡 Medium:    1
-│ ✅ Passed:    8
+│ ✅ Passed:    9
 └────────────────────────────────────────────────────────
 
 ┌─ FINDINGS ──────────────────────────────────────────────
@@ -152,6 +191,12 @@ Timestamp: 2026-01-26T15:30:00.000Z
 This audit was performed by Clawdbot's self-security framework.
 No changes were made to your configuration.
 ```
+
+## Reporting Vulnerabilities
+
+Report security issues to: **security@clawd.bot**
+
+**Do not post vulnerabilities publicly** until they have been fixed.
 
 ## Contributing
 
