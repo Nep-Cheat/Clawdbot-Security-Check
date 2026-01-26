@@ -1,144 +1,160 @@
 # Clawdbot Security Check
 
-🔒 **Read-only security analysis tool for Clawdbot configurations**
+🔒 **Self-security audit framework for Clawdbot**
 
 Inspired by the security hardening framework from [ᴅᴀɴɪᴇʟ ᴍɪᴇssʟᴇʀ](https://x.com/DanielMiessler) ([original post](https://x.com/DanielMiessler/status/2015865548714975475)).
 
-A read-only security scanner that analyzes Clawdbot installations for the top 10 security vulnerabilities without making any changes to your configuration.
+This skill teaches Clawdbot to audit its own security posture using first-principles reasoning. Not a hard-coded script—it's a **knowledge framework** that Clawdbot applies dynamically to detect vulnerabilities, understand their impact, and recommend specific remediations.
 
-## Features
+## What This Is
 
-- ✅ **100% Read-Only** - Never modifies settings or files
-- 🔍 **10 Security Checks** - Covers all major Clawdbot hardening areas
-- 📊 **Detailed Reports** - Human-readable and JSON output formats
-- 🚀 **Zero Dependencies** - Uses only Node.js built-ins
-- 🔧 **Multiple Config Locations** - Auto-detects common config paths
+- 🧠 **Knowledge-based** - Embeds the security framework directly in Clawdbot
+- 🔍 **Dynamic detection** - Clawdbot learns to find issues, not just run a script
+- 📚 **Extensible** - Add new checks by updating the skill
+- 🔒 **100% Read-only** - Only audits; never modifies configuration
 
-## Security Checks
+## The 10 Security Domains
 
-| # | Check | Severity | Description |
-|---|-------|----------|-------------|
-| 1 | Gateway Exposure | 🔴 Critical | Detects unbound gateway with no auth token |
-| 2 | DM Policy | 🟠 High | Verifies allowlist-based DM restrictions |
-| 3 | Sandbox | 🟠 High | Confirms Docker sandbox isolation is enabled |
-| 4 | Credentials | 🔴 Critical | Finds plaintext credential files |
-| 5 | Prompt Injection | 🟡 Medium | Checks for untrusted content wrapping |
-| 6 | Dangerous Commands | 🟠 High | Validates command blocking configuration |
-| 7 | Network Isolation | 🟡 Medium | Verifies Docker network restrictions |
-| 8 | Elevated Access | 🟡 Medium | Checks MCP tool restrictions |
-| 9 | Audit Logging | 🟡 Medium | Confirms session logging is enabled |
-| 10| Pairing Codes | 🟡 Medium | Validates cryptographic randomness |
+| # | Domain | Severity | Key Question |
+|---|--------|----------|--------------|
+| 1 | Gateway Exposure | 🔴 Critical | Is the gateway bound to 0.0.0.0 without auth? |
+| 2 | DM Policy | 🟠 High | Are DMs restricted to an allowlist? |
+| 3 | Sandbox Isolation | 🟠 High | Is Docker sandbox enabled with network isolation? |
+| 4 | Credentials Security | 🔴 Critical | Are secrets in plaintext with loose permissions? |
+| 5 | Prompt Injection | 🟡 Medium | Is untrusted content wrapped to prevent injection? |
+| 6 | Dangerous Commands | 🟠 High | Are destructive commands blocked? |
+| 7 | Network Isolation | 🟡 Medium | Is Docker network restricted? |
+| 8 | Elevated Tool Access | 🟡 Medium | Are tools restricted to minimum needed? |
+| 9 | Audit Logging | 🟡 Medium | Is session activity logged for investigation? |
+| 10| Pairing Codes | 🟡 Medium | Are codes cryptographic + rate-limited? |
 
 ## Installation
 
 ```bash
-# Clone or download
+# Clone for Clawdbot skill integration
 git clone https://github.com/TheSethRose/Clawdbot-Security-Check.git
-cd Clawdbot-Security-Check
-
-# Make executable
-chmod +x security-check.js
+cp -r Clawdbot-Security-Check ~/.clawdbot/skills/
 ```
 
 ## Usage
 
-### Quick Scan
-```bash
-node security-check.js
+### Via Clawdbot
+```
+@clawdbot audit my security
+@clawdbot run security check
+@clawdbot what vulnerabilities do I have?
 ```
 
-### JSON Output (for automation)
+### Direct Execution
 ```bash
-node security-check.js --json
+node security-check.js           # Human-readable report
+node security-check.js --json    # JSON for programmatic use
 ```
 
-### As a Clawdbot Skill
-Copy the skill to your Clawdbot skills directory:
-```bash
-cp -r Clawdbot-Security-Check ~/.clawdbot/skills/
+## How It Works
+
+Instead of a static script, this skill provides:
+
+1. **Detection knowledge** - What config keys reveal each vulnerability
+2. **Baseline definitions** - What "secure" looks like for each domain
+3. **Remediation templates** - Specific fixes for each issue type
+4. **Audit methodology** - Step-by-step execution framework
+
+### Example: Clawdbot's Thought Process
+
+When auditing, Clawdbot now thinks:
+
+```
+For Gateway Exposure:
+1. Look at ~/.clawdbot/config.json for "bind_address"
+2. If "0.0.0.0" AND no "auth_token" → VULNERABLE
+3. Report: "Gateway exposed on 0.0.0.0:18789 without authentication"
+4. Recommend: "Set gateway.auth_token in environment variables"
 ```
 
-Then use via Clawdbot:
+## Extending the Framework
+
+Add new checks by contributing to SKILL.md:
+
+```markdown
+## 11. New Vulnerability 🟡 Medium
+
+**What to check:** What config reveals this?
+
+**How to detect:**
+```bash
+command-to-check-config
 ```
-@clawdbot run security-check
+
+**Vulnerability:** What can go wrong?
+
+**Remediation:**
+```json
+{
+  "fix": "here"
+}
 ```
+```
+
+## Architecture
+
+```
+Clawdbot-Security-Check/
+├── SKILL.md          # Knowledge framework (the skill)
+├── security-check.js # Reference implementation
+├── README.md         # This file
+├── package.json
+└── .gitignore
+```
+
+**SKILL.md** is the source of truth—it teaches Clawdbot. **security-check.js** is a standalone reference implementation for CLI use.
+
+## Why This Approach?
+
+Hard-coded scripts get stale. A knowledge framework evolves:
+
+- ✅ Add new vulnerabilities without code changes
+- ✅ Customize checks for your environment
+- ✅ Clawdbot understands the "why" behind each check
+- ✅ Enables intelligent follow-up questions
+
+> "The goal isn't to find vulnerabilities—it's to understand security deeply enough that vulnerabilities can't hide." — Daniel Miessler
 
 ## Output Example
 
 ```
 ═══════════════════════════════════════════════════════════════
-🔒 CLAWDBOT SECURITY ANALYSIS REPORT
+🔒 CLAWDBOT SECURITY AUDIT
 ═══════════════════════════════════════════════════════════════
-Generated: 2026-01-26T15:30:00.000Z
+Timestamp: 2026-01-26T15:30:00.000Z
 
 ┌─ SUMMARY ───────────────────────────────────────────────
-│ ✅ Passed:     7
-│ ⚠️  Warnings:   2
-│ 🔴 Critical:   1
+│ 🔴 Critical:  1
+│ 🟠 High:      2
+│ 🟡 Medium:    1
+│ ✅ Passed:    6
 └────────────────────────────────────────────────────────
 
 ┌─ FINDINGS ──────────────────────────────────────────────
 │ 🔴 [CRITICAL] Gateway Exposure
-│    Check if gateway is exposed on 0.0.0.0 without auth token
-│    Finding: Gateway exposed on 0.0.0.0:18789 without authentication
-│    → Set gateway.auth_token in environment variables
+│    Finding: Gateway bound to 0.0.0.0:18789 without auth
+│    → Fix: Set gateway.auth_token environment variable
 │
 │ 🟠 [HIGH] DM Policy
-│    Check if DM policy is set to allowlist
-│    Finding: DM policy is "allow" - allows all users
-│    → Set dm_policy to allowlist with explicit users
-│
+│    Finding: dm_policy is "allow" (all users)
+│    → Fix: Set dm_policy to "allowlist" with trusted users
 └────────────────────────────────────────────────────────
 
-This is a READ-ONLY analysis. No changes were made.
-```
-
-## Config Locations Checked
-
-The tool checks these locations for Clawdbot configuration:
-- `~/.clawdbot/config.json`
-- `~/.clawdbot/config.yaml`
-- `~/.clawdbot/.clawdbotrc`
-- `.clawdbotrc` (current directory)
-
-## Remediations
-
-Each finding includes a specific recommendation. Common fixes:
-
-### 1. Gateway Authentication
-```bash
-export CLAWDBOT_AUTH_TOKEN="your-secure-random-token"
-```
-
-### 2. DM Allowlist
-```json
-{
-  "dm_policy": "allowlist",
-  "dm_policy_allowlist": ["@trusteduser1", "@trusteduser2"]
-}
-```
-
-### 3. Sandbox Isolation
-```json
-{
-  "sandbox": "all",
-  "docker": {
-    "network": "none"
-  }
-}
-```
-
-### 4. Credential Security
-```bash
-chmod 600 ~/.clawdbot/oauth.json
+This audit was performed by Clawdbot's self-security framework.
+No changes were made to your configuration.
 ```
 
 ## Contributing
 
-1. Fork the repository
-2. Add new security checks to `CHECKS` array
-3. Update `skill.json` with new check IDs
-4. Submit a PR
+1. Fork the repo
+2. Add new security knowledge to SKILL.md
+3. Test with `node security-check.js`
+4. Submit PR
 
 ## License
 
@@ -146,4 +162,4 @@ MIT - Security-first, open source forever.
 
 ---
 
-**Remember**: This tool is read-only. It identifies issues but never modifies your configuration. You remain in full control of all security decisions.
+**Clawdbot knows its attack surface. Do you?**
